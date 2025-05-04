@@ -6,29 +6,36 @@ const app = express();
 const token = process.env.BOT_TOKEN || '7602359629:AAHejF-qIjcvPmYQrUotawjEsa9ykFgT6uk';
 const bot = new TelegramBot(token, {polling: false});
 
-// پورت از متغیر محیطی یا پیش‌فرض 3000
 const PORT = process.env.PORT || 3000;
-
-// URL وب‌هوک (در Koyeb به صورت خودکار ساخته می‌شود)
 const WEBHOOK_URL = process.env.KOYEB_APP_URL 
                    ? `https://${process.env.KOYEB_APP_URL}.koyeb.app/bot` 
                    : 'https://bot.zhixgame.com/bot';
 
-// راه‌اندازی سرور
+// Middleware
 app.use(express.json());
+
+// Route
 app.post(`/bot${token}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
 
-// فقط برای HTTP (در Koyeb نیازی به HTTPS نیست)
+// پردازش دستور /start
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  const userName = msg.from.first_name || 'کاربر';
+  
+  bot.sendMessage(chatId, `سلام ${userName}! 👋\nبه ربات خوش آمدید!`);
+});
+
+// Start server
 app.listen(PORT, async () => {
-  console.log(`Bot running on port ${PORT}`);
+  console.log(`\n🤖 ربات در حال راه‌اندازی...`);
   
   try {
     await bot.setWebHook(`${WEBHOOK_URL}${token}`);
-    console.log('Webhook set successfully:', WEBHOOK_URL);
+    console.log('✅ وب‌هوک با موفقیت تنظیم شد');
   } catch (error) {
-    console.error('Failed to set webhook:', error);
+    console.error('❌ خطا در تنظیم وب‌هوک:', error);
   }
 });
