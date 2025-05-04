@@ -1,0 +1,17 @@
+version: v2  # نسخه پیکربندی
+name: telegram-bot  # نام اپلیکیشن
+services:
+  - name: bot-service
+    ports:
+      - port: 3000
+        http_path: /bot
+    env:
+      - name: BOT_TOKEN
+        value: "7602359629:AAHejF-qIjcvPmYQrUotawjEsa9ykFgT6uk" # ❗ توکن واقعی را جایگزین کنید
+    regions: ["fra"]  # منطقه سرور (مثلاً اروپا)
+    scalings:
+      min: 1  # حداقل نمونه
+    http:
+      routes:
+        - path: /bot
+          port: 3000
